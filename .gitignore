@@ -1,0 +1,78 @@
+# ---------------------------------------------------------
+# Core Node / pnpm / Vite
+# ---------------------------------------------------------
+node_modules/
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite build output
+dist/
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------
+# TypeScript
+# ---------------------------------------------------------
+*.tsbuildinfo
+
+# ---------------------------------------------------------
+# Go backend
+# ---------------------------------------------------------
+# Binaries
+apps/backend/theseus-api
+*.exe
+*.out
+*.test
+
+# Go workspace files
+go.work.sum
+
+# Vendored dependencies (if using `go mod vendor`)
+vendor/
+
+# Profiling output
+*.prof
+*.pprof
+
+# Go coverage output
+coverage.out
+
+# ---------------------------------------------------------
+# Shared packages
+# ---------------------------------------------------------
+# (dist/ output is covered by the global pattern above)
+
+# ---------------------------------------------------------
+# Logs
+# ---------------------------------------------------------
+logs/
+*.log
+*.log.*
+
+# ---------------------------------------------------------
+# OS / Editor junk
+# ---------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ---------------------------------------------------------
+# Docker
+# ---------------------------------------------------------
+# Local Docker build artifacts
+docker-compose.override.yml
+infra/docker/*.local.*
+
+# ---------------------------------------------------------
+# Misc
+# ---------------------------------------------------------
+coverage/
+tmp/
