@@ -39,6 +39,7 @@ theseus/
 | [Node.js](https://nodejs.org/) | 20+ (LTS recommended) | Required by Vite |
 | [pnpm](https://pnpm.io/) | ^11.18.0 | Enforced via `devEngines`; auto-downloaded if missing/wrong version |
 | GNU Make | any | Used for all common tasks |
+| [Docker](https://www.docker.com/) | any recent | Optional — only needed for containerized builds/deployment |
 
 To install pnpm:
 
@@ -65,6 +66,8 @@ cd packages/go-lib && go mod download && cd ../..
 ```
 
 ## Running the Application
+
+For day-to-day development, run the app directly (no Docker) to get hot reload and fast iteration. Use the Docker flow below to verify production builds or deploy.
 
 ### Both frontend and backend (recommended)
 
@@ -97,6 +100,11 @@ make backend    # Go API server only (port :8080)
 | `make clean` | Remove all build artifacts |
 | `make clean-frontend` | Remove frontend build artifacts only |
 | `make clean-backend` | Remove backend binary only |
+| `make docker-build` | Build both Docker images |
+| `make docker-build-backend` | Build the backend Docker image only |
+| `make docker-build-frontend` | Build the frontend Docker image only |
+| `make docker-run-backend` | Run the backend container (`:8080`) |
+| `make docker-run-frontend` | Run the frontend container (`:8081`) |
 
 ## Production Build
 
@@ -114,14 +122,48 @@ cd apps/frontend && pnpm preview
 
 ## Docker
 
-Dockerfiles live in [infra/docker](infra/docker):
+Dockerfiles live in [infra/docker](infra/docker). Use this flow to verify production artifacts locally or to deploy — not for active development, since containers have no hot reload and every code change requires a rebuild.
+
+The [Makefile](Makefile) wraps the common commands:
+
+```bash
+make docker-build          # build both images
+make docker-run-backend    # backend at http://localhost:8080
+make docker-run-frontend   # frontend at http://localhost:8081
+```
+
+The run targets assume the images already exist — run `make docker-build` first (and re-run it after any code change).
+
+Or run docker directly. Build the backend image from the repository root (required, since `go.work` spans multiple modules):
 
 ```bash
 docker build -f infra/docker/backend.Dockerfile -t theseus-backend .
-docker build -f infra/docker/frontend.Dockerfile -t theseus-frontend .
 ```
 
-> **Note:** The Dockerfiles are currently placeholders and need to be filled in before use.
+Build the frontend image using `apps/frontend` as the build context:
+
+```bash
+docker build -f infra/docker/frontend.Dockerfile -t theseus-frontend apps/frontend
+```
+
+Run the backend container:
+
+```bash
+docker run --rm -p 8080:8080 theseus-backend
+```
+
+Run the frontend container:
+
+```bash
+docker run --rm -p 8081:80 theseus-frontend
+```
+
+Then open:
+
+- Frontend: http://localhost:8081
+- Backend: http://localhost:8080
+
+If the frontend needs to call the backend in production, configure the API base URL or route `/api` through nginx to the backend container.
 
 ## How It Works
 
